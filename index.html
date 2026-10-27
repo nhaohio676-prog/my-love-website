@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Someone Special ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:24px 0;font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#160016,#4b123d,#17001f);color:white;
+  display:flex;justify-content:center;align-items:center;overflow-x:hidden
+}
+.card{
+  width:90%;max-width:440px;padding:30px 22px;text-align:center;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);
+  border-radius:25px;box-shadow:0 0 35px rgba(255,50,150,.25);
+  backdrop-filter:blur(12px);position:relative;z-index:2
+}
+h1{color:#ff8dc7}
+p{line-height:1.8;color:#ffe4f2}
+.heart{font-size:65px;animation:beat 1s infinite}
+button{
+  padding:12px 20px;margin:7px;border:0;border-radius:25px;cursor:pointer;
+  font-size:15px;font-weight:bold;transition:transform .04s,background .2s
+}
+button:hover{transform:scale(1.06)}
+button:focus-visible{outline:3px solid white;outline-offset:3px}
+.yes{color:white;background:#ff3f91}
+.no{color:#333;background:white}
+.open{background:#bd68ff;color:white}
+.music{color:white;background:#49304f}
+#letter,#result{display:none;margin-top:20px;line-height:1.8;color:#ffd1e8}
+#question{margin-top:16px}
+#actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px}
+.floating{
+  position:fixed;bottom:-45px;animation:float 6s linear forwards;
+  pointer-events:none;z-index:5
+}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:4}
+@keyframes beat{50%{transform:scale(1.2)}}
+@keyframes float{to{transform:translateY(-110vh) rotate(360deg);opacity:0}}
+@media(max-width:400px){.card{padding:24px 14px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="heart" aria-hidden="true">💗</div>
+  <h1>Hey, Someone Special...</h1>
+  <p>I've been keeping something in my heart.<br>Today, I finally want to tell you. 🌹</p>
+
+  <button class="open" id="openBtn" onclick="openLetter()">💌 Open My Letter</button>
+
+  <div id="letter">
+    Dear You ❤️<br><br>
+    I don't know how to say this perfectly, but I really like you.
+    Talking to you makes my days better, and seeing you makes me happy.<br><br>
+    I don't expect you to give me the answer I want.
+    I just want you to know how I truly feel.<br><br>
+    So, there's one thing I want to ask you... 💗
+  </div>
+
+  <div id="question" style="display:none">
+    <h2 style="color:#ff8dc7">Will you give me a chance? 🥺❤️</h2>
+    <div id="actions">
+      <button class="yes" onclick="sayYes()">YES! 💖</button>
+      <button class="no" id="noBtn" onclick="sayNo()">NO 🙈</button>
+    </div>
+    <p id="noHint" style="font-size:12px;opacity:.75;margin:4px 0 0">Psst... try hovering over “No” 😉</p>
+  </div>
+
+  <div id="result" role="status" aria-live="polite"></div>
+
+  <br>
+  <button class="music" id="musicBtn" onclick="toggleMusic()">🎵 Play My Song ❤️</button>
+  <p style="font-size:12px;opacity:.7">A little song for someone special 🌹</p>
+
+  <audio id="loveSong" preload="metadata" loop>
+    <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support audio playback.
+  </audio>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+let answered = false;
+const music = document.getElementById("loveSong");
+const musicBtn = document.getElementById("musicBtn");
+const noBtn = document.getElementById("noBtn");
+music.volume = 0.5;
+
+function openLetter(){
+  document.getElementById("letter").style.display = "block";
+  document.getElementById("question").style.display = "block";
+  document.getElementById("openBtn").style.display = "none";
+}
+
+function showResult(message){
+  const result = document.getElementById("result");
+  result.style.display = "block";
+  result.innerHTML = message;
+  document.getElementById("question").style.display = "none";
+  document.getElementById("noHint").style.display = "none";
+}
+
+function sayYes(){
+  if(answered) return;
+  answered = true;
+  showResult("OMG!! 🥹💖<br><br>You just made my day so special! 🌹<br>Thank you for giving me a chance. ❤️");
+  launchConfetti();
+  for(let i=0;i<35;i++) setTimeout(createHeart, i*90);
+}
+
+function sayNo(){
+  if(answered) return;
+  answered = true;
+  showResult("Thank you for being honest with me. ❤️<br><br>I'll respect your feelings. I wish you happiness. 🌷");
+}
+
+function moveNoButton(){
+  if(answered) return;
+  // Move quickly and farther whenever the pointer gets close.
+  const maxX = Math.max(100, Math.min(window.innerWidth * 0.42, 260));
+  const maxY = Math.max(70, Math.min(window.innerHeight * 0.28, 180));
+  const x = Math.round((Math.random() * 2 - 1) * maxX);
+  const y = Math.round((Math.random() * 2 - 1) * maxY);
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+}
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("pointermove", moveNoButton);
+noBtn.addEventListener("touchstart", function(event){
+  // Keep it playful on touch devices too, while still allowing a tap if it can be reached.
+  if(!answered) moveNoButton();
+}, {passive:true});
+// The shorter CSS transition makes the button dart away much faster.
+
+function createHeart(){
+  const heart = document.createElement("div");
+  heart.className = "floating";
+  heart.textContent = ["💖","❤️","💕","🌹","✨"][Math.floor(Math.random()*5)];
+  heart.style.left = Math.random()*100 + "vw";
+  heart.style.fontSize = (18 + Math.random()*25) + "px";
+  heart.style.animationDuration = (4 + Math.random()*4) + "s";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),8000);
+}
+setInterval(createHeart,700);
+
+let confettiFrame = null;
+function launchConfetti(){
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = Array.from({length:140},()=>({
+    x:Math.random()*canvas.width,
+    y:-20-Math.random()*canvas.height*.5,
+    size:4+Math.random()*7,
+    speed:2+Math.random()*4,
+    drift:Math.random()*2-1,
+    rotation:Math.random()*Math.PI,
+    spin:Math.random()*.12-.06,
+    emoji:Math.random()>.7
+  }));
+  let frame = 0;
+  cancelAnimationFrame(confettiFrame);
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.y += p.speed; p.x += p.drift; p.rotation += p.spin;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rotation);
+      ctx.fillStyle = ["#ff8dc7","#ffd166","#ffffff","#bd68ff","#ff3f91"][Math.floor((p.x+p.y)%5)];
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.5);
+      ctx.restore();
+    });
+    frame++;
+    if(frame<180) confettiFrame=requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+window.addEventListener("resize",()=>{
+  const canvas=document.getElementById("confetti");
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+});
+
+async function toggleMusic(){
+  if(music.paused){
+    try{
+      await music.play();
+      musicBtn.textContent="⏸ Pause My Song";
+    }catch(error){
+      alert("The song could not play. Make sure music.mp3 is in the same folder as index.html.");
+      console.error("Audio playback error:",error);
+    }
+  }else{
+    music.pause();
+    musicBtn.textContent="🎵 Play My Song ❤️";
+  }
+}
+music.addEventListener("error",()=>{
+  musicBtn.title="Could not load music.mp3. Keep it beside index.html.";
+});
+</script>
+</body>
+</html>
